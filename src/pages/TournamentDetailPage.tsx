@@ -91,10 +91,6 @@ export function TournamentDetailPage({ id }: { id: string }) {
       navigate({ name: 'signin' });
       return;
     }
-    if (profile?.role !== 'player') {
-      setError(t('Only player accounts can register for tournaments.'));
-      return;
-    }
 
     setRegistering(true);
     setError(null);
