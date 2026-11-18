@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from '@/context/RouterContext';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { AlertCircle, LocateFixed, MapPin } from 'lucide-react';
-import { Icon, LatLngTuple } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { MoroccoMap } from '@/components/MoroccoMap';
 import { Card } from '@/components/ui/Card';
 import { ErrorState, PageLoader } from '@/components/ui/Feedback';
 import { Button } from '@/components/ui/Button';
@@ -35,26 +33,9 @@ type MapPinData = {
   distance: number | null;
 };
 
-const moroccoCenter: LatLngTuple = [31.7917, -7.0926];
-const pinIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
 function normalizeCity(city: MapCity | MapCity[] | null): MapCity | null {
   if (Array.isArray(city)) return city[0] ?? null;
   return city;
-}
-
-function RecenterMap({ center, zoom }: { center: LatLngTuple; zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo(center, zoom, { duration: 0.8 });
-  }, [center, map, zoom]);
-  return null;
 }
 
 export function EventMapPage() {
@@ -145,9 +126,8 @@ export function EventMapPage() {
       .filter((pin) => pin.distance !== null && pin.distance <= radiusKm)
       .sort((a, b) => (a.distance ?? Number.POSITIVE_INFINITY) - (b.distance ?? Number.POSITIVE_INFINITY))
     : pins;
-  const mapCenter = useMemo<LatLngTuple>(() => coordinates
-    ? [coordinates.latitude, coordinates.longitude]
-    : moroccoCenter, [coordinates]);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const selectedPin = visiblePins.find((pin) => pin.key === selectedKey) ?? null;
   const locale = language === 'ar' ? 'ar' : language;
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
 
@@ -190,45 +170,41 @@ export function EventMapPage() {
         {coordinates && <p className="mb-4 text-sm text-gray-400">{t('Showing city-center events within')} {radiusKm} {t('km')} · {visiblePins.length} {t('nearby locations')}</p>}
         {loading ? <PageLoader /> : (
           <>
-            <Card className="overflow-hidden border border-surface-700 p-2">
-              <MapContainer center={mapCenter} zoom={coordinates ? 7 : 5} scrollWheelZoom className="h-[65vh] min-h-[420px] w-full rounded-xl">
-                <RecenterMap center={mapCenter} zoom={coordinates ? 7 : 5} />
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <Card className="overflow-hidden border border-surface-700 p-3">
+                <MoroccoMap
+                  className="mx-auto max-h-[75vh] w-full"
+                  points={visiblePins.map((pin) => ({
+                    key: pin.key, lat: pin.city.latitude!, lng: pin.city.longitude!, label: pin.city.name,
+                    count: pin.tournaments.length + pin.meetups.length + pin.clubs.length,
+                  }))}
+                  selectedKey={selectedKey}
+                  onSelect={setSelectedKey}
+                  user={coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : null}
                 />
-                {visiblePins.map((pin) => (
-                  <Marker key={pin.key} position={[pin.city.latitude!, pin.city.longitude!]} icon={pinIcon}>
-                    <Popup>
-                      <div className="min-w-56">
-                        <h2 className="mb-2 text-base font-bold">{pin.city.name}{pin.distance !== null ? ` · ~${Math.round(pin.distance)} km` : ''}</h2>
-                        {pin.tournaments.map((event) => (
-                          <p key={event.id} className="mb-1">
-                            <span>♟ </span>
-                            <a href={`#/tournaments/${event.id}`} className="font-medium text-indigo-700">{event.title}</a>
-                            <span className="block text-xs text-gray-600">{t('Tournament')} · {dateFormatter.format(new Date(event.starts_at))}</span>
-                          </p>
-                        ))}
-                        {pin.meetups.map((event) => (
-                          <p key={event.id} className="mb-1">
-                            <span>♞ </span>
-                            <a href="#/meetups" className="font-medium text-indigo-700">{event.title}</a>
-                            <span className="block text-xs text-gray-600">{t('Casual meetup')} · {dateFormatter.format(new Date(event.starts_at))}</span>
-                          </p>
-                        ))}
-                        {pin.clubs.map((club) => (
-                          <p key={club.id} className="mb-1">
-                            <span>♜ </span>
-                            <a href={`#/clubs/${club.id}`} className="font-medium text-indigo-700">{club.name}</a>
-                            <span className="block text-xs text-gray-600">{t('Chess club')}</span>
-                          </p>
-                        ))}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            </Card>
+              </Card>
+              <Card className="h-fit p-5">
+                {selectedPin ? (
+                  <div>
+                    <h2 className="mb-3 text-lg font-bold text-white">{selectedPin.city.name}{selectedPin.distance !== null ? ` · ~${Math.round(selectedPin.distance)} km` : ''}</h2>
+                    {selectedPin.tournaments.map((event) => (
+                      <p key={event.id} className="mb-2"><span>♟ </span><a href={`#/tournaments/${event.id}`} className="font-medium text-brand-300 hover:underline">{event.title}</a>
+                        <span className="block text-xs text-gray-500">{t('Tournament')} · {dateFormatter.format(new Date(event.starts_at))}</span></p>
+                    ))}
+                    {selectedPin.meetups.map((event) => (
+                      <p key={event.id} className="mb-2"><span>♞ </span><a href="#/meetups" className="font-medium text-brand-300 hover:underline">{event.title}</a>
+                        <span className="block text-xs text-gray-500">{t('Casual meetup')} · {dateFormatter.format(new Date(event.starts_at))}</span></p>
+                    ))}
+                    {selectedPin.clubs.map((club) => (
+                      <p key={club.id} className="mb-2"><span>♜ </span><a href={`#/clubs/${club.id}`} className="font-medium text-brand-300 hover:underline">{club.name}</a>
+                        <span className="block text-xs text-gray-500">{t('Chess club')}</span></p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">{t('Select a city on the map to see its tournaments, meetups and clubs.')}</p>
+                )}
+              </Card>
+            </div>
 
             {visiblePins.length === 0 && !error && (
               <Card className="mt-5 p-5">

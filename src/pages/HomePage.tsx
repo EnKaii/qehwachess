@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { CircleMarker, MapContainer, TileLayer, Tooltip } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useMemo, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { MoroccoMap } from '@/components/MoroccoMap';
 import { Link } from '@/context/RouterContext';
 import { useTournaments, useCities } from '@/hooks/useData';
 import { TournamentCard } from '@/components/TournamentCard';
@@ -19,7 +19,6 @@ import {
 import { getDaysUntil, formatDateRange, tournamentFormatLabels } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
 
-const moroccoCenter: [number, number] = [31.7917, -7.0926];
 
 export function HomePage() {
   const { t, language } = useLanguage();
@@ -40,44 +39,34 @@ export function HomePage() {
     [tournaments]
   );
 
+  const [playerCount, setPlayerCount] = useState(0);
+  useEffect(() => {
+    void supabase.from('profiles').select('id', { count: 'exact', head: true }).then(({ count }) => setPlayerCount(count ?? 0));
+  }, []);
+
   const stats = useMemo(
     () => ({
       tournaments: tournaments.length,
       cities: cities.length,
-      players: 1250,
+      players: playerCount,
     }),
-    [tournaments, cities]
+    [tournaments, cities, playerCount]
   );
 
   return (
     <div className="min-h-screen">
       {/* Hero */}
       <section className="relative isolate flex min-h-[720px] items-center justify-center overflow-hidden border-b border-surface-700/40 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-        <MapContainer
-          center={moroccoCenter}
-          zoom={5}
-          scrollWheelZoom={false}
-          zoomControl={false}
-          attributionControl={false}
-          className="home-hero-map"
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {cities.filter((city) => city.latitude !== null && city.longitude !== null).map((city) => (
-            <CircleMarker
-              key={city.id}
-              center={[city.latitude as number, city.longitude as number]}
-              radius={6}
-              pathOptions={{ className: 'home-map-marker', weight: 2, fillOpacity: 1 }}
-            >
-              <Tooltip direction="top" offset={[0, -5]}>{city.name}</Tooltip>
-            </CircleMarker>
-          ))}
-        </MapContainer>
+        <MoroccoMap
+          decorative
+          className="pointer-events-none absolute right-[-4%] top-1/2 h-[88%] -translate-y-1/2 opacity-70 sm:right-[2%] lg:right-[6%]"
+          points={cities.filter((city) => city.latitude !== null && city.longitude !== null).map((city) => ({ key: city.id, lat: city.latitude as number, lng: city.longitude as number, label: city.name }))}
+        />
         <div className="home-hero-wash pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 chess-pattern opacity-30" />
 
         <div className="relative z-10 mx-auto max-w-5xl text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-brand-500/25 bg-surface-900/75 font-display text-5xl text-brand-500 shadow-xl backdrop-blur-sm animate-scale-in" aria-hidden="true">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-brand-500/25 bg-surface-900/75 font-display text-5xl text-brand-300 shadow-xl backdrop-blur-sm animate-scale-in" aria-hidden="true">
             ♞
           </div>
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-500/25 bg-surface-900/80 px-4 py-2 text-sm font-semibold text-brand-600 shadow-sm backdrop-blur-sm animate-fade-in">
@@ -86,7 +75,7 @@ export function HomePage() {
           </div>
           <h1 className="font-display text-6xl font-bold leading-none text-white text-balance sm:text-7xl lg:text-8xl animate-fade-in-up">
             {t('Qehwa Chess')}
-            <span className="mt-3 block font-sans text-2xl font-semibold text-brand-600 sm:text-3xl">{t('Find your people. Play over the board.')}</span>
+            <span className="mt-3 block font-sans text-2xl font-semibold text-accent-300 sm:text-3xl">{t('Find your people. Play over the board.')}</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-400 sm:text-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             {t('Find local meetups, chess clubs, and tournaments from Casablanca to Tangier.')}
@@ -111,7 +100,7 @@ export function HomePage() {
             {[
               { icon: Trophy, label: t('Tournaments'), value: stats.tournaments + '+' },
               { icon: MapPin, label: t('Cities'), value: stats.cities + '+' },
-              { icon: Users, label: t('Players'), value: stats.players + '+' },
+              { icon: Users, label: t('Players'), value: String(stats.players) },
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-2 text-sm text-gray-400">
                 <stat.icon className="h-4 w-4 text-brand-600" />
@@ -120,9 +109,6 @@ export function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-        <div className="absolute bottom-3 right-4 z-10 rounded bg-surface-900/75 px-2 py-1 text-[10px] text-gray-300 backdrop-blur-sm">
-          © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline">OpenStreetMap</a> contributors
         </div>
       </section>
 

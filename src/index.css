@@ -8,87 +8,93 @@
 
 :root,
 :root[data-theme='dark'] {
-  --page-bg: #0d100e;
-  --page-bg-2: #141814;
-  --surface-950: #101310;
-  --surface-900: #171b17;
-  --surface-800: #1e241f;
-  --surface-700: #29332b;
-  --surface-600: #39463b;
-  --brand-500: #5b8d72;
-  --brand-600: #47735b;
-  --brand-700: #355640;
-  --tw-surface-950: 16 19 16;
-  --tw-surface-900: 23 27 23;
-  --tw-surface-800: 30 36 31;
-  --tw-surface-700: 41 51 43;
-  --tw-surface-600: 57 70 59;
-  --tw-brand-50: 243 248 244;
-  --tw-brand-100: 225 237 228;
-  --tw-brand-200: 194 220 201;
-  --tw-brand-300: 158 198 169;
-  --tw-brand-400: 115 168 135;
-  --tw-brand-500: 91 141 114;
-  --tw-brand-600: 71 115 91;
-  --tw-brand-700: 53 86 64;
-  --tw-brand-800: 37 62 45;
-  --tw-brand-900: 23 40 29;
-  --tw-accent-50: 250 247 238;
-  --tw-accent-100: 242 232 208;
-  --tw-accent-200: 224 203 154;
-  --tw-accent-300: 204 177 109;
-  --tw-accent-400: 186 153 81;
-  --tw-accent-500: 158 126 56;
-  --tw-accent-600: 126 98 41;
-  --tw-accent-700: 91 69 31;
-  --text-primary: #f5f7fa;
-  --text-secondary: #c3ccd6;
-  --text-muted: #8d99a6;
-  --border: rgba(255, 255, 255, 0.07);
-  --shadow-soft: rgba(0, 0, 0, 0.32);
-  --card-highlight: rgba(255, 255, 255, 0.03);
+  /* Night in Fes: deep zellige blue, saffron, cream */
+  --page-bg: #0a1220;
+  --page-bg-2: #0e192b;
+  --surface-950: #0a1220;
+  --surface-900: #0f1a2c;
+  --surface-800: #16243a;
+  --surface-700: #223452;
+  --surface-600: #31486c;
+  --brand-500: #2f6fc8;
+  --brand-600: #2457a4;
+  --brand-700: #1d4480;
+  --tw-surface-950: 10 18 32;
+  --tw-surface-900: 15 26 44;
+  --tw-surface-800: 22 36 58;
+  --tw-surface-700: 34 52 82;
+  --tw-surface-600: 49 72 108;
+  --tw-brand-50: 238 245 253;
+  --tw-brand-100: 214 231 249;
+  --tw-brand-200: 172 205 242;
+  --tw-brand-300: 128 176 232;
+  --tw-brand-400: 85 143 218;
+  --tw-brand-500: 47 111 200;
+  --tw-brand-600: 36 87 164;
+  --tw-brand-700: 29 68 128;
+  --tw-brand-800: 22 50 94;
+  --tw-brand-900: 15 34 64;
+  --tw-accent-50: 255 249 235;
+  --tw-accent-100: 253 237 196;
+  --tw-accent-200: 250 217 140;
+  --tw-accent-300: 245 192 84;
+  --tw-accent-400: 236 166 41;
+  --tw-accent-500: 214 138 22;
+  --tw-accent-600: 168 104 18;
+  --tw-accent-700: 120 74 15;
+  --text-primary: #f7f1e3;
+  --text-secondary: #d6cdb9;
+  --text-muted: #9d9786;
+  --border: rgba(247, 241, 227, 0.09);
+  --shadow-soft: rgba(0, 0, 0, 0.4);
+  --card-highlight: rgba(247, 241, 227, 0.03);
+  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%232f6fc8' stroke-opacity='0.16' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
+  --wash: rgba(47, 111, 200, 0.16);
 }
 
 :root[data-theme='light'] {
-  --page-bg: #f6f6f2;
-  --page-bg-2: #ffffff;
-  --surface-950: #f7f7f3;
-  --surface-900: #ffffff;
-  --surface-800: #f0f1ec;
-  --surface-700: #e5e8df;
-  --surface-600: #d5dbd0;
-  --brand-500: #2e5d4e;
-  --brand-600: #234b3d;
-  --brand-700: #193a2f;
-  --tw-surface-950: 247 247 243;
-  --tw-surface-900: 255 255 255;
-  --tw-surface-800: 240 241 236;
-  --tw-surface-700: 229 232 223;
-  --tw-surface-600: 213 219 208;
-  --tw-brand-50: 241 247 243;
-  --tw-brand-100: 221 235 225;
-  --tw-brand-200: 190 217 199;
-  --tw-brand-300: 151 190 163;
-  --tw-brand-400: 111 161 132;
-  --tw-brand-500: 46 93 78;
-  --tw-brand-600: 35 75 61;
-  --tw-brand-700: 25 58 47;
-  --tw-brand-800: 21 47 37;
-  --tw-brand-900: 14 34 26;
-  --tw-accent-50: 250 247 238;
-  --tw-accent-100: 242 232 208;
-  --tw-accent-200: 224 203 154;
-  --tw-accent-300: 204 177 109;
-  --tw-accent-400: 186 153 81;
-  --tw-accent-500: 158 126 56;
-  --tw-accent-600: 126 98 41;
-  --tw-accent-700: 91 69 31;
-  --text-primary: #111827;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border: rgba(17, 24, 39, 0.08);
-  --shadow-soft: rgba(15, 23, 42, 0.06);
-  --card-highlight: rgba(17, 24, 39, 0.02);
+  /* Day in Marrakech: cream, deep blue, saffron */
+  --page-bg: #f7f0e1;
+  --page-bg-2: #fbf7ee;
+  --surface-950: #faf5ea;
+  --surface-900: #fffdf8;
+  --surface-800: #f2e9d6;
+  --surface-700: #e5d8bd;
+  --surface-600: #d3c3a0;
+  --brand-500: #1f5aa8;
+  --brand-600: #184a8c;
+  --brand-700: #123a70;
+  --tw-surface-950: 250 245 234;
+  --tw-surface-900: 255 253 248;
+  --tw-surface-800: 242 233 214;
+  --tw-surface-700: 229 216 189;
+  --tw-surface-600: 211 195 160;
+  --tw-brand-50: 239 245 252;
+  --tw-brand-100: 217 232 247;
+  --tw-brand-200: 178 207 240;
+  --tw-brand-300: 128 171 222;
+  --tw-brand-400: 74 127 196;
+  --tw-brand-500: 31 90 168;
+  --tw-brand-600: 24 74 140;
+  --tw-brand-700: 18 58 112;
+  --tw-brand-800: 14 45 88;
+  --tw-brand-900: 9 31 62;
+  --tw-accent-50: 255 247 225;
+  --tw-accent-100: 253 232 178;
+  --tw-accent-200: 247 211 118;
+  --tw-accent-300: 168 104 18;
+  --tw-accent-400: 140 84 10;
+  --tw-accent-500: 120 70 8;
+  --tw-accent-600: 94 54 6;
+  --tw-accent-700: 70 40 5;
+  --text-primary: #1c1b17;
+  --text-secondary: #4a4636;
+  --text-muted: #6d6754;
+  --border: rgba(28, 27, 23, 0.1);
+  --shadow-soft: rgba(60, 40, 10, 0.08);
+  --card-highlight: rgba(28, 27, 23, 0.02);
+  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%231f5aa8' stroke-opacity='0.12' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
+  --wash: rgba(31, 90, 168, 0.1);
 }
 
 * {
@@ -99,49 +105,27 @@
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background:
-    radial-gradient(circle at top, rgba(91, 141, 114, 0.12), transparent 30%),
+    radial-gradient(circle at top, var(--wash), transparent 34%),
+    var(--zellige),
     linear-gradient(180deg, var(--page-bg) 0%, var(--page-bg-2) 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
 }
 
-html[data-theme='light'] body {
-  background:
-    radial-gradient(circle at top, rgba(91, 141, 114, 0.08), transparent 32%),
-    linear-gradient(180deg, #fafaf7 0%, #f2f3ee 100%);
-}
-
 html[data-theme='light'] .gradient-text {
-  background-image: linear-gradient(135deg, #193a2f 0%, #47735b 48%, #193a2f 100%);
-}
-
-.home-hero-map {
-  position: absolute !important;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--page-bg);
-}
-
-.home-hero-map .leaflet-tile {
-  filter: saturate(0.58) contrast(0.94) brightness(1.04);
-}
-
-html[data-theme='dark'] .home-hero-map .leaflet-tile {
-  filter: grayscale(0.8) saturate(0.45) brightness(0.55) contrast(1.1);
-}
-
-.home-map-marker {
-  fill: var(--brand-500);
-  stroke: var(--brand-700);
+  background-image: linear-gradient(135deg, #123a70 0%, #1f5aa8 48%, #a86812 100%);
 }
 
 .home-hero-wash {
-  background: linear-gradient(180deg, rgba(250, 249, 246, 0.36) 0%, rgba(250, 249, 246, 0.56) 58%, var(--page-bg) 100%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--page-bg) 55%, transparent) 60%, var(--page-bg) 100%);
 }
 
-html[data-theme='dark'] .home-hero-wash {
-  background: linear-gradient(180deg, rgba(13, 16, 14, 0.42) 0%, rgba(13, 16, 14, 0.6) 58%, var(--page-bg) 100%);
+/* Chessboard strip: a nod to the game, in the national colors of the palette. */
+.checker-edge {
+  height: 12px;
+  background:
+    repeating-conic-gradient(rgb(var(--tw-brand-500) / 0.55) 0% 25%, rgb(var(--tw-accent-400) / 0.55) 0% 50%) 0 0 / 24px 24px;
+  opacity: 0.7;
 }
 
 [dir='rtl'] body {
@@ -202,15 +186,15 @@ html[data-theme='dark'] .home-hero-wash {
   html[data-theme='light'] .border-surface-800 { border-color: var(--border) !important; }
 
   html[data-theme='light'] .glass {
-    background: rgba(255, 255, 255, 0.72) !important;
+    background: rgba(255, 253, 248, 0.8) !important;
   }
 
   html[data-theme='light'] .chess-pattern {
     background-image:
-      linear-gradient(45deg, rgba(148, 163, 184, 0.04) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(148, 163, 184, 0.04) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(148, 163, 184, 0.04) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(148, 163, 184, 0.04) 75%);
+      linear-gradient(45deg, rgba(31, 90, 168, 0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(31, 90, 168, 0.05) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(31, 90, 168, 0.05) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(31, 90, 168, 0.05) 75%);
   }
 }
 
@@ -236,13 +220,13 @@ html[data-theme='dark'] .home-hero-wash {
   }
 
   .glass {
-    background: rgba(17, 17, 17, 0.72);
+    background: color-mix(in srgb, var(--surface-900) 78%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 42%, #f8fafc 100%);
+    background: linear-gradient(135deg, #f7f1e3 0%, #f5c054 50%, #f7f1e3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -250,10 +234,10 @@ html[data-theme='dark'] .home-hero-wash {
 
   .chess-pattern {
     background-image:
-      linear-gradient(45deg, rgba(91, 141, 114, 0.03) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(91, 141, 114, 0.03) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(91, 141, 114, 0.03) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(91, 141, 114, 0.03) 75%);
+      linear-gradient(45deg, rgba(47, 111, 200, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(47, 111, 200, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(47, 111, 200, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(47, 111, 200, 0.06) 75%);
     background-size: 40px 40px;
     background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
   }
@@ -314,3 +298,4 @@ html[data-theme='dark'] .home-hero-wash {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--brand-500);
 }
+
