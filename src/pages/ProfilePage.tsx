@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { OrganizerAccessCard } from '@/components/OrganizerAccess';
 import { PageLoader } from '@/components/ui/Feedback';
 import { User, Mail, Phone, MapPin, Save, AlertCircle, CheckCircle2, ImageUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -136,6 +137,7 @@ export function ProfilePage() {
           <p className="text-gray-500 mt-2">{t('Update your personal information')}</p>
         </div>
 
+        <OrganizerAccessCard />
         <Card className="p-6 sm:p-8">
           {/* Avatar + role */}
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-surface-700">
@@ -150,6 +152,7 @@ export function ProfilePage() {
               <p className="text-lg font-bold text-white">{profile.full_name}</p>
               <p className="text-sm text-gray-500">{profile.email}</p>
               <Badge className="mt-1.5 bg-brand-500/20 text-brand-300 border-brand-500/30">{t(profile.role)}</Badge>
+              {profile.can_organize && profile.role !== 'admin' && <Badge className="ml-2 mt-1.5 bg-accent-500/20 text-accent-300 border-accent-500/30">{t('organizer')}</Badge>}
             </div>
           </div>
 

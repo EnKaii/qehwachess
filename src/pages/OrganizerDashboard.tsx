@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useRouter } from '@/context/RouterContext';
 import { useAuth } from '@/context/AuthContext';
+import { canOrganize } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -68,7 +69,7 @@ export function OrganizerDashboard() {
     navigate({ name: 'signin' });
     return null;
   }
-  if (profile?.role !== 'organizer' && profile?.role !== 'admin') {
+  if (!canOrganize(profile)) {
     return (
       <div className="pt-24">
         <ErrorState message={t('You need an organizer account to access this page.')} />
@@ -386,7 +387,7 @@ function TournamentForm({ tournament, cities, clubs, onClose, onSaved }: FormPro
                   <option key={s} value={s}>{t(tournamentStatusLabels[s])}</option>
                 ))}
               </select>
-              {profile?.role === 'organizer' && (
+              {profile?.role !== 'admin' && (
                 <p className="mt-1.5 text-xs text-gray-500">{t('New tournaments require admin approval before players can see or join them.')}</p>
               )}
             </div>

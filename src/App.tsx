@@ -46,7 +46,6 @@ function AppRoutes() {
       case 'signin': return <SignInPage />;
       case 'signup': return <SignUpPage />;
       case 'dashboard':
-        if (profile?.role === 'organizer') return <OrganizerDashboard />;
         if (profile?.role === 'admin') return <AdminDashboard />;
         return <PlayerDashboard />;
       case 'organizer': return <OrganizerDashboard />;

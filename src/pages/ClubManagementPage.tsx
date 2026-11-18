@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from '@/context/RouterContext';
 import { useCities } from '@/hooks/useData';
 import { useLanguage } from '@/context/LanguageContext';
+import { canOrganize } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import type { Club, ClubMembership } from '@/types';
 import { Button } from '@/components/ui/Button';
@@ -132,7 +133,7 @@ export function ClubManagementPage() {
     navigate({ name: 'signin' });
     return null;
   }
-  if (profile?.role !== 'organizer' && profile?.role !== 'admin') {
+  if (!canOrganize(profile)) {
     return <div className="pt-24"><ErrorState message={t('Organizer access required to manage clubs.')} /></div>;
   }
 

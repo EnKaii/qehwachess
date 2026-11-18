@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, Link } from '@/context/RouterContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { OrganizerRequestsPanel } from '@/components/OrganizerAccess';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -116,7 +117,7 @@ export function AdminDashboard() {
     pending: tournaments.filter((t) => t.status === 'pending').length,
     published: tournaments.filter((t) => t.status === 'published').length,
     totalUsers: profiles.length,
-    organizers: profiles.filter((p) => p.role === 'organizer').length,
+    organizers: profiles.filter((p) => p.can_organize && p.role !== 'admin').length,
     players: profiles.filter((p) => p.role === 'player').length,
   };
 
@@ -188,6 +189,7 @@ export function AdminDashboard() {
           <PageLoader />
         ) : tab === 'overview' ? (
           <div className="grid lg:grid-cols-2 gap-6">
+            <OrganizerRequestsPanel />
             {/* Pending tournaments */}
             <Card className="p-6">
               <h2 className="text-lg font-bold text-white mb-4">{t('Pending Approvals')}</h2>
@@ -289,10 +291,10 @@ export function AdminDashboard() {
                   </div>
                   <Badge className={
                     p.role === 'admin' ? 'bg-error-500/20 text-error-300 border-error-500/30' :
-                    p.role === 'organizer' ? 'bg-accent-500/20 text-accent-300 border-accent-500/30' :
+                    p.can_organize ? 'bg-accent-500/20 text-accent-300 border-accent-500/30' :
                     'bg-brand-500/20 text-brand-300 border-brand-500/30'
                   }>
-                    {translate(p.role)}
+                    {translate(p.role === 'player' && p.can_organize ? 'organizer' : p.role)}
                   </Badge>
                   {p.city && <span className="text-xs text-gray-500 hidden sm:inline">{p.city.name}</span>}
                 </Card>

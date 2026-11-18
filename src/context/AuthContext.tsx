@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import type { Profile, UserRole } from '@/types';
+import type { Profile } from '@/types';
 
 interface AuthContextValue {
   session: Session | null;
@@ -14,7 +14,6 @@ interface AuthContextValue {
     email: string,
     password: string,
     fullName: string,
-    role: UserRole,
     cityId: string,
     chessAccounts: {
       username: string;
@@ -90,18 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (lookupError) return { error: lookupError.message };
 
     const metadata = authUser.user_metadata;
-    const requestedRole = metadata.role;
-    const role: UserRole = requestedRole === 'organizer' ? 'organizer' : 'player';
-    if (existingProfile) {
-      if (role === 'organizer' && existingProfile.role === 'player') {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ role: 'organizer' })
-          .eq('id', authUser.id);
-        return { error: updateError?.message ?? null };
-      }
-      return { error: null };
-    }
+    if (existingProfile) return { error: null };
 
     const fullName =
       (typeof metadata.full_name === 'string' && metadata.full_name) ||
@@ -115,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: authUser.id,
         full_name: fullName,
         email: authUser.email ?? '',
-        role,
+        role: 'player',
         city_id: cityId,
         username: typeof metadata.username === 'string' ? metadata.username : null,
         lichess_username: typeof metadata.lichess_username === 'string' ? metadata.lichess_username : null,
@@ -144,7 +132,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     fullName: string,
-    role: UserRole,
     cityId: string,
     chessAccounts: {
       username: string;
@@ -159,7 +146,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: {
         data: {
           full_name: fullName,
-          role,
           city_id: cityId,
           username: chessAccounts.username.trim().replace(/^@/, ''),
           lichess_username: chessAccounts.lichessUsername.trim().replace(/^@/, '') || null,

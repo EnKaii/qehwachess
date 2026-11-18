@@ -95,3 +95,6 @@ export function getChessPieceIcon(format: TournamentFormat): string {
   };
   return icons[format] || '♟';
 }
+
+export const canOrganize = (profile: { role: string; can_organize?: boolean } | null | undefined) =>
+  Boolean(profile && (profile.can_organize || profile.role === 'admin'));

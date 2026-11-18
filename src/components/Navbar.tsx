@@ -52,16 +52,13 @@ export function Navbar() {
 
   const isActive = (name: string) => route.name === name;
   const dashboardLabel =
-    profile?.role === 'organizer'
-      ? t('Organizer Dashboard')
-      : profile?.role === 'admin'
-        ? t('Admin Dashboard')
-        : t('Dashboard');
+    profile?.role === 'admin'
+      ? t('Admin Dashboard')
+      : t('Dashboard');
 
   function getDashboardRoute() {
     if (!profile) return { name: 'dashboard' as const };
     if (profile.role === 'admin') return { name: 'admin' as const };
-    if (profile.role === 'organizer') return { name: 'organizer' as const };
     return { name: 'dashboard' as const };
   }
 
@@ -156,7 +153,7 @@ export function Navbar() {
                       <LayoutDashboard className="w-4 h-4" />
                       {dashboardLabel}
                     </button>
-                    {profile?.role === 'organizer' && (
+                    {profile?.can_organize && (
                       <button
                         onClick={() => navigate({ name: 'organizer' })}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-all"

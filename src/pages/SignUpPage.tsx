@@ -4,8 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCities } from '@/hooks/useData';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Crown, Mail, Lock, User, AlertCircle, ArrowRight, Trophy, Building2 } from 'lucide-react';
-import { UserRole } from '@/types';
+import { Crown, Mail, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function SignUpPage() {
@@ -17,7 +16,6 @@ export function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('player');
   const [cityId, setCityId] = useState('');
   const [lichessUsername, setLichessUsername] = useState('');
   const [chesscomUsername, setChesscomUsername] = useState('');
@@ -55,7 +53,7 @@ export function SignUpPage() {
         setLoading(false);
         return;
       }
-      const result = await signUp(email, password, fullName.trim(), role, cityId, {
+      const result = await signUp(email, password, fullName.trim(), cityId, {
         username: normalizedUsername,
         lichessUsername: lichess,
         chesscomUsername: chesscom,
@@ -101,39 +99,6 @@ export function SignUpPage() {
               {t(notice)}
             </div>
           )}
-
-          {/* Role selector */}
-          <div className="mb-5">
-            <label className="text-sm font-medium text-gray-400 mb-2 block">{t('I want to...')}</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole('player')}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  role === 'player'
-                    ? 'bg-brand-500/10 border-brand-500/40'
-                    : 'bg-surface-800 border-surface-700 hover:border-surface-600'
-                }`}
-              >
-                <Trophy className={`w-5 h-5 mb-2 ${role === 'player' ? 'text-brand-400' : 'text-gray-500'}`} />
-                <p className="text-sm font-bold text-white">{t('Play')}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{t('Find & join tournaments')}</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole('organizer')}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  role === 'organizer'
-                    ? 'bg-brand-500/10 border-brand-500/40'
-                    : 'bg-surface-800 border-surface-700 hover:border-surface-600'
-                }`}
-              >
-                <Building2 className={`w-5 h-5 mb-2 ${role === 'organizer' ? 'text-brand-400' : 'text-gray-500'}`} />
-                <p className="text-sm font-bold text-white">{t('Organize')}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{t('Publish tournaments')}</p>
-              </button>
-            </div>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

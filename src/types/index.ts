@@ -27,6 +27,9 @@ export interface Profile {
   full_name: string;
   email: string;
   role: UserRole;
+  can_organize: boolean;
+  organizer_request_status: 'pending' | 'rejected' | null;
+  organizer_request_note: string | null;
   city_id: string | null;
   phone: string | null;
   bio: string | null;
