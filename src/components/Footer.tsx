@@ -12,9 +12,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-                <Logo size={22} className="text-white" />
-              </div>
+              <Logo size={30} className="text-white" />
               <div className="flex flex-col leading-none">
                 <span className="text-base font-bold text-white">Qehwa Chess</span>
                 <span className="text-[10px] text-brand-400 font-medium tracking-wider uppercase">{t('Discover · Play · Compete')}</span>

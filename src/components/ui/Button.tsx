@@ -9,23 +9,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
+const CHAMFER = '[clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,10px_100%,0_calc(100%-10px))]';
 const variantClasses: Record<Variant, string> = {
-  primary:
-    'bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 transition-all',
-  secondary:
-    'bg-surface-900/80 hover:bg-surface-800 text-gray-200 border border-surface-700 hover:border-brand-500/50 hover:text-white shadow-sm transition-all',
-  ghost:
-    'bg-transparent hover:bg-white/5 text-gray-300 hover:text-white transition-all',
-  danger:
-    'bg-error-500/90 hover:bg-error-500 text-white transition-all',
-  outline:
-    'bg-transparent border border-brand-500/50 hover:border-brand-400 hover:bg-brand-500/10 text-brand-300 hover:text-brand-200 transition-all',
+  primary: `bg-brand-500 hover:bg-brand-400 text-white transition-colors ${CHAMFER}`,
+  secondary: 'bg-surface-900 hover:bg-surface-800 text-gray-200 border border-surface-700 hover:border-accent-400/70 hover:text-white transition-colors',
+  ghost: 'bg-transparent hover:bg-white/5 text-gray-300 hover:text-white transition-colors',
+  danger: 'bg-error-500/90 hover:bg-error-500 text-white transition-colors',
+  outline: 'bg-transparent border border-accent-400/60 hover:border-accent-300 hover:bg-accent-400/10 text-brand-300 hover:text-white transition-colors',
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm rounded-lg',
-  md: 'px-5 py-2.5 text-sm rounded-xl',
-  lg: 'px-7 py-3.5 text-base rounded-xl',
+  sm: 'px-3.5 py-2 text-xs uppercase tracking-wider',
+  md: 'px-5 py-2.5 text-xs uppercase tracking-wider',
+  lg: 'px-7 py-3.5 text-sm uppercase tracking-wider',
 };
 
 export function Button({

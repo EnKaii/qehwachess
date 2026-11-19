@@ -25,7 +25,10 @@ const FILES = 'abcdefgh';
 const sq = (s: string): [number, number] => [FILES.indexOf(s[0]), 8 - Number(s[1])]; // x 0..7 (a..h), y 0..7 (rank 8 at top)
 const BACK: PieceType[] = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
 
-export function buildGame(): GamePiece[] {
+/** The game starts from the famous position after 12...Rd8, just before the queen sacrifice. */
+export const SETUP_PLIES = 24;
+
+export function buildGame(skip = SETUP_PLIES): GamePiece[] {
   const pieces: GamePiece[] = [];
   const board = new Map<string, GamePiece>();
   const put = (p: GamePiece) => { pieces.push(p); board.set(`${p.x0},${p.y0}`, p); };
@@ -55,7 +58,17 @@ export function buildGame(): GamePiece[] {
       }
     }
   });
-  return pieces;
+  return pieces
+    .filter((pc) => !(pc.capturedPly >= 0 && pc.capturedPly < skip))
+    .map((pc) => {
+      let x = pc.x0;
+      let y = pc.y0;
+      const steps: Step[] = [];
+      for (const st of pc.steps) {
+        if (st.ply < skip) { x = st.tx; y = st.ty; } else steps.push({ ...st, ply: st.ply - skip });
+      }
+      return { ...pc, x0: x, y0: y, steps, capturedPly: pc.capturedPly >= 0 ? pc.capturedPly - skip : -1 };
+    });
 }
 
 const ease = (t: number) => t * t * (3 - 2 * t);

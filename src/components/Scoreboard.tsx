@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Crown, Minus } from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { MinaretPodium } from '@/components/MinaretPodium';
 import { computeStandings, rankMovement, type Game, type Player } from '@/lib/tournament';
 
 const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
-const MEDAL = ['bg-amber-400/15 text-amber-300 border-amber-400/40', 'bg-gray-300/10 text-gray-200 border-gray-300/30', 'bg-orange-500/10 text-orange-300 border-orange-500/30'];
 
 interface Props {
   players: Player[];
@@ -39,18 +39,7 @@ export function Scoreboard({ players, games, completedRounds, finalRound }: Prop
         ))}
       </div>
 
-      {isFinal && podium.length >= 3 && (
-        <div className="mb-6 grid grid-cols-3 items-end gap-3" aria-label={t('Podium')}>
-          {[1, 0, 2].map((i) => (
-            <div key={podium[i].id} className={`rounded-xl border p-3 text-center ${MEDAL[i]} ${i === 0 ? 'pb-6' : ''}`}>
-              {i === 0 && <Crown className="mx-auto mb-1 h-5 w-5" />}
-              <div className="text-2xl font-bold">{i + 1}</div>
-              <div className="truncate text-sm font-semibold text-white">{podium[i].name}</div>
-              <div className="text-xs">{fmt(podium[i].points)} {t('pts')}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      {isFinal && podium.length >= 3 && <MinaretPodium places={podium.map((x) => ({ name: x.name, points: `${fmt(x.points)} ${t('pts')}` }))} />}
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">

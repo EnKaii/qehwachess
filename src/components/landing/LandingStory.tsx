@@ -3,12 +3,12 @@ import { useRouter } from '@/context/RouterContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import { MOROCCO_PATH, projectToMorocco } from '@/lib/moroccoMap';
-import { OPERA_MOVES, buildGame, pieceAt } from '@/lib/operaGame';
+import { OPERA_MOVES, SETUP_PLIES, buildGame, pieceAt } from '@/lib/operaGame';
 import { PIECE_SHAPES } from './pieceShapes';
 
-const SCROLL_PX = 12000;
+const SCROLL_PX = 10000;
 const GAME = buildGame();
-const PLIES = OPERA_MOVES.length;
+const PLIES = OPERA_MOVES.length - SETUP_PLIES;
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
 const ease = (t: number) => t * t * (3 - 2 * t);
 const easeOutBack = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
@@ -26,10 +26,10 @@ const CITY_DATA = [
 ].map((c) => ({ ...c, ...projectToMorocco(c.lat, c.lng) }));
 
 const NAV_PIECES: Record<string, { label: string; ar: string; route: 'tournaments' | 'clubs' | 'players' | 'meetups' }> = {
-  wa1: { label: 'Clubs', ar: 'النوادي', route: 'clubs' },
-  wc1: { label: 'Meetups', ar: 'اللقاءات', route: 'meetups' },
   we1: { label: 'Tournaments', ar: 'البطولات', route: 'tournaments' },
-  wg1: { label: 'Players', ar: 'اللاعبون', route: 'players' },
+  wd1: { label: 'Players', ar: 'اللاعبون', route: 'players' },
+  wh1: { label: 'Clubs', ar: 'النوادي', route: 'clubs' },
+  wc1: { label: 'Meetups', ar: 'اللقاءات', route: 'meetups' },
 };
 
 type Counts = Record<string, { id: string | null; t: number; c: number; g: number }>;
@@ -89,15 +89,15 @@ export function LandingStory() {
   const gateScale = 0.8 + 2.2 * ease(seg(p, 0, 0.18));
   const gateO = 1 - seg(p, 0.14, 0.2);
   const sx = 1 - 0.94 * ease(seg(p, 0, 0.14));
-  const q = PLIES * seg(p, 0.24, 0.55);
-  const clear = ease(seg(p, 0.55, 0.62));
-  const outline = ease(seg(p, 0.6, 0.7));
-  const fill = ease(seg(p, 0.68, 0.74));
-  const labelsO = seg(p, 0.17, 0.19) * (1 - seg(p, 0.23, 0.25));
-  const shift = ease(seg(p, 0.6, 0.68));
-  const cardO = seg(p, 0.78, 0.83);
-  const mapLive = p > 0.78;
-  const moveNo = Math.min(17, Math.floor(Math.min(q, PLIES - 0.001) / 2) + 1);
+  const q = PLIES * seg(p, 0.26, 0.52);
+  const clear = ease(seg(p, 0.52, 0.58));
+  const outline = ease(seg(p, 0.57, 0.67));
+  const fill = ease(seg(p, 0.65, 0.71));
+  const labelsO = seg(p, 0.17, 0.19) * (1 - seg(p, 0.24, 0.26));
+  const shift = ease(seg(p, 0.57, 0.65));
+  const cardO = seg(p, 0.75, 0.8);
+  const mapLive = p > 0.75;
+  const moveNo = Math.min(17, 13 + Math.floor(Math.min(q, PLIES - 0.001) / 2));
 
   const pieces = useMemo(() => {
     const rows = GAME.map((g) => ({ g, s: pieceAt(g, q) })).filter((r) => r.s.opacity > 0.01);
@@ -132,7 +132,7 @@ export function LandingStory() {
                 <path d={MOROCCO_PATH} fill="url(#b-map)" opacity={fill} />
                 <path d={MOROCCO_PATH} pathLength={1} fill="none" stroke="#F0C75E" strokeWidth={6} strokeLinejoin="round" strokeLinecap="round" strokeDasharray="1 1" strokeDashoffset={1 - outline} style={{ filter: 'drop-shadow(0 0 8px rgba(226,178,74,.8))' }} />
                 {CITY_DATA.map((c, i) => {
-                  const r = clamp((p - (0.72 + i * 0.005)) / 0.05);
+                  const r = clamp((p - (0.69 + i * 0.005)) / 0.05);
                   if (r <= 0) return null;
                   const on = c.name === sel;
                   const s = easeOutBack(r) * (on ? 1.35 : 1);
@@ -150,7 +150,7 @@ export function LandingStory() {
 
               {labelsO > 0.01 && Object.keys(NAV_PIECES).map((id) => {
                 const g = GAME.find((x) => x.id === id);
-                return g ? <line key={id} x1={g.x0 * 100 + 50} y1={g.y0 * 100 + 92} x2={g.x0 * 100 + 50} y2={872} stroke="#E2B24A" strokeWidth="2" opacity={labelsO * 0.8} /> : null;
+                return g ? <circle key={id} cx={g.x0 * 100 + 50} cy={g.y0 * 100 + 50} r={54} fill="none" stroke="#E2B24A" strokeWidth="3" strokeDasharray="12 9" opacity={labelsO * (hoverPiece === id ? 1 : 0.65)} /> : null;
               })}
               {/* the Opera Game */}
               {clear < 1 && pieces.map(({ g, s }) => {
@@ -178,7 +178,7 @@ export function LandingStory() {
               if (!piece) return null;
               return (
                 <button key={id} type="button" onClick={() => navigate({ name: n.route })} onMouseEnter={() => setHoverPiece(id)} onMouseLeave={() => setHoverPiece(null)}
-                  style={{ position: 'absolute', left: `${((piece.x0 * 100 + 100) / 900) * 100}%`, top: `${((872 + 50) / 900) * 100}%`, transform: 'translate(-50%, 0)', opacity: labelsO, pointerEvents: labelsO > 0.5 ? 'auto' : 'none', cursor: 'pointer', border: '1px solid #E2B24A', background: hoverPiece === id ? '#E2B24A' : 'rgba(10,18,53,.94)', color: hoverPiece === id ? '#0A1235' : '#EFE9DC', padding: '5px 12px', textAlign: 'center', whiteSpace: 'nowrap', transition: 'background .2s, color .2s' }}>
+                  style={{ position: 'absolute', left: piece.x0 <= 3 ? 'calc(0% - 20px)' : 'calc(100% + 20px)', top: `${((piece.y0 * 100 + 100) / 900) * 100}%`, transform: piece.x0 <= 3 ? 'translate(-100%, -50%)' : 'translate(0, -50%)', opacity: labelsO, pointerEvents: labelsO > 0.5 ? 'auto' : 'none', cursor: 'pointer', border: '1px solid #E2B24A', background: hoverPiece === id ? '#E2B24A' : 'rgba(10,18,53,.94)', color: hoverPiece === id ? '#0A1235' : '#EFE9DC', padding: '5px 12px', textAlign: 'center', whiteSpace: 'nowrap', transition: 'background .2s, color .2s' }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>{t(n.label)}</div>
                   <div style={{ fontFamily: kufi, fontSize: 15 }}>{n.ar}</div>
                 </button>
@@ -205,7 +205,7 @@ export function LandingStory() {
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 14, textAlign: 'center', pointerEvents: 'none', opacity: labelsO, fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
           {t('Choose a piece, or keep scrolling')}
         </div>
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 28, textAlign: 'center', pointerEvents: 'none', opacity: seg(p, 0.26, 0.3) * (1 - seg(p, 0.52, 0.56)), fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 28, textAlign: 'center', pointerEvents: 'none', opacity: seg(p, 0.28, 0.31) * (1 - seg(p, 0.49, 0.52)), fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
           {t('Morphy vs. Duke of Brunswick · Paris 1858')} · {t('Move')} {moveNo}
         </div>
 
@@ -234,34 +234,59 @@ export function LandingStory() {
 
 const btnStyle: React.CSSProperties = { border: '1px solid rgba(239,233,220,.4)', background: 'none', color: '#EFE9DC', font: '600 12px Inter, sans-serif', padding: '8px 14px', cursor: 'pointer' };
 
+const arch = (x: number, w: number, top: number, bottom: number) => {
+  const r = 0.54 * w;
+  const yj = top + r + Math.sqrt(r * r - (w / 2) ** 2);
+  return `M${x} ${bottom}V${yj.toFixed(1)}A${r.toFixed(1)} ${r.toFixed(1)} 0 1 1 ${x + w} ${yj.toFixed(1)}V${bottom}Z`;
+};
+const OPENING = arch(170, 300, 190, 800);
+
+function Niche({ x, piece }: { x: number; piece: 'knight' | 'rook' }) {
+  return (
+    <g>
+      <path d={arch(x, 220, 330, 770)} fill="url(#g-zel)" stroke="#E2B24A" strokeWidth="2" />
+      <path d={arch(x + 14, 192, 346, 770)} fill="#EFE9DC" />
+      <path d={arch(x + 22, 176, 354, 770)} fill="#0A1235" />
+      <g transform={`translate(${x + 110 - 85} ${770 - 205}) scale(1.7)`} fill="#E2B24A" stroke="#7E5510" strokeWidth="2" strokeLinejoin="round" style={{ ['--ink' as string]: '#7E5510' }} dangerouslySetInnerHTML={{ __html: PIECE_SHAPES[piece] }} />
+    </g>
+  );
+}
+
 function GateSvg({ sx }: { sx: number }) {
-  const knocker = (x: number) => (<><circle cx={x} cy="560" r="13" fill="none" stroke="#7E5510" strokeWidth="4" /><circle cx={x} cy="545" r="5" fill="#7E5510" /></>);
+  const knocker = (x: number) => (<><circle cx={x} cy="560" r="14" fill="none" stroke="#7E5510" strokeWidth="4" /><circle cx={x} cy="544" r="5" fill="#7E5510" /></>);
+  const leaf = (x: number) => (<><rect x={x} y="185" width="170.5" height="630" fill="url(#g-brass)" /><rect x={x} y="185" width="170.5" height="630" fill="url(#g-sheen)" /></>);
   return (
     <svg viewBox="0 0 640 860" style={{ width: '100%', height: '100%', overflow: 'visible', display: 'block' }} role="img" aria-label="Fes palace gate">
       <defs>
+        <pattern id="g-wall" width="56" height="56" patternUnits="userSpaceOnUse"><rect width="56" height="56" fill="#0D1A64" /><g fill="none" stroke="#2740B0" strokeWidth="1"><rect x="14" y="14" width="28" height="28" /><rect x="14" y="14" width="28" height="28" transform="rotate(45 28 28)" /></g></pattern>
         <pattern id="g-zel" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#1A33A0" /><g fill="none" stroke="#6F8CF0" strokeWidth="1"><rect x="8" y="8" width="16" height="16" /><rect x="8" y="8" width="16" height="16" transform="rotate(45 16 16)" /></g><circle cx="16" cy="16" r="1.8" fill="#E2B24A" /></pattern>
         <pattern id="g-dark" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#13277F" /><g fill="none" stroke="#3B5BD0" strokeWidth="1"><rect x="7" y="7" width="14" height="14" /><rect x="7" y="7" width="14" height="14" transform="rotate(45 14 14)" /></g></pattern>
         <pattern id="g-medal" width="44" height="44" patternUnits="userSpaceOnUse"><rect width="44" height="44" fill="#2146C4" /><circle cx="22" cy="22" r="11" fill="none" stroke="#EFE9DC" strokeWidth="2" /><circle cx="22" cy="22" r="4" fill="#E2B24A" /></pattern>
-        <pattern id="g-brass" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="#D9A93D" /><rect width="32" height="32" fill="#BE8C26" /><rect x="32" y="32" width="32" height="32" fill="#BE8C26" />
-          <g fill="none" stroke="#7E5510" strokeWidth="1.3">{[[6, 6, 16, 16], [38, 6, 48, 16], [6, 38, 16, 48], [38, 38, 48, 48]].map(([x, y, cx, cy]) => (<g key={`${x}-${y}`}><rect x={x} y={y} width="20" height="20" /><rect x={x} y={y} width="20" height="20" transform={`rotate(45 ${cx} ${cy})`} /></g>))}</g>
-          <g fill="#F0CC74"><circle cx="16" cy="16" r="2.2" /><circle cx="48" cy="16" r="2.2" /><circle cx="16" cy="48" r="2.2" /><circle cx="48" cy="48" r="2.2" /></g></pattern>
-        <linearGradient id="g-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#000" stopOpacity=".28" /><stop offset=".5" stopColor="#fff" stopOpacity=".1" /><stop offset="1" stopColor="#000" stopOpacity=".18" /></linearGradient>
-        <mask id="g-hole" maskUnits="userSpaceOnUse" x="-4000" y="-3000" width="8640" height="6860"><rect x="-4000" y="-3000" width="8640" height="6860" fill="#fff" /><path d="M154 800V391A172 172 0 1 1 486 391V800Z" fill="#000" /></mask>
-        <clipPath id="g-open"><path d="M154 800V391A172 172 0 1 1 486 391V800Z" /></clipPath>
+        <pattern id="g-brass" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#D9A93D" /><rect width="40" height="40" fill="#C0902A" /><rect x="40" y="40" width="40" height="40" fill="#C0902A" />
+          <g fill="none" stroke="#7E5510" strokeWidth="1.3">{[[20, 20], [60, 20], [20, 60], [60, 60]].map(([cx, cy]) => [0, 30, 60].map((a) => (<rect key={`${cx}-${cy}-${a}`} x={cx - 12} y={cy - 12} width="24" height="24" transform={`rotate(${a} ${cx} ${cy})`} />)))}</g>
+          <g fill="#F0CC74"><circle cx="20" cy="20" r="3" /><circle cx="60" cy="20" r="3" /><circle cx="20" cy="60" r="3" /><circle cx="60" cy="60" r="3" /></g></pattern>
+        <linearGradient id="g-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#000" stopOpacity=".3" /><stop offset=".5" stopColor="#fff" stopOpacity=".08" /><stop offset="1" stopColor="#000" stopOpacity=".2" /></linearGradient>
+        <mask id="g-hole" maskUnits="userSpaceOnUse" x="-4000" y="-3000" width="8640" height="6860"><rect x="-4000" y="-3000" width="8640" height="6860" fill="#fff" /><path d={OPENING} fill="#000" /></mask>
+        <clipPath id="g-open"><path d={OPENING} /></clipPath>
       </defs>
       <g mask="url(#g-hole)">
-        <rect x="-4000" y="-3000" width="8640" height="6860" fill="#0A1235" />
+        <rect x="-4000" y="-3000" width="8640" height="6860" fill="url(#g-wall)" />
+        <Niche x={-310} piece="knight" />
+        <Niche x={730} piece="rook" />
         <rect width="640" height="860" fill="url(#g-zel)" />
-        <rect x="18" y="18" width="604" height="824" fill="none" stroke="url(#g-dark)" strokeWidth="36" />
-        <rect x="36" y="36" width="568" height="788" fill="none" stroke="#E2B24A" strokeWidth="2" />
+        <rect x="14" y="14" width="612" height="832" fill="none" stroke="#E2B24A" strokeWidth="3" />
+        <rect x="22" y="22" width="596" height="816" fill="none" stroke="url(#g-dark)" strokeWidth="30" />
+        <rect x="38" y="38" width="564" height="784" fill="none" stroke="#E2B24A" strokeWidth="2" />
         <rect x="52" y="52" width="536" height="772" fill="url(#g-dark)" />
-        <path d="M100 800V417A230 230 0 1 1 540 417V800Z" fill="url(#g-medal)" stroke="#E2B24A" strokeWidth="2" />
-        <path d="M130 800V404A198 198 0 1 1 510 404V800Z" fill="#EFE9DC" />
-        <path d="M130 800V404A198 198 0 1 1 510 404V800" fill="none" stroke="#EFE9DC" strokeWidth="12" strokeDasharray="0 13" strokeLinecap="round" />
+        <path d={arch(100, 440, 118, 800)} fill="url(#g-medal)" stroke="#E2B24A" strokeWidth="2" />
+        <path d={arch(126, 388, 150, 800)} fill="#EFE9DC" />
+        <path d={arch(126, 388, 150, 800).replace(/Z$/, '')} fill="none" stroke="#EFE9DC" strokeWidth="13" strokeDasharray="0 13" strokeLinecap="round" />
+        <path d={arch(140, 360, 170, 800)} fill="url(#g-medal)" stroke="#E2B24A" strokeWidth="2" />
+        <rect x="52" y="800" width="536" height="26" fill="#0B1550" />
       </g>
       <g clipPath="url(#g-open)">
-        <g transform={`translate(154 0) scale(${sx} 1) translate(-154 0)`}><rect x="154" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="154" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(296)}</g>
-        <g transform={`translate(486 0) scale(${sx} 1) translate(-486 0)`}><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(344)}</g>
+        <g transform={`translate(150 0) scale(${sx} 1) translate(-150 0)`}>{leaf(150)}{knocker(304)}</g>
+        <g transform={`translate(490 0) scale(${sx} 1) translate(-490 0)`}>{leaf(319.5)}{knocker(336)}</g>
       </g>
     </svg>
   );

@@ -23,9 +23,9 @@ function SectionTitle({ ar, title, sub, center = false }: { ar: string; title: s
     <div className={center ? 'text-center' : ''}>
       <div className={`flex items-center gap-3 ${center ? 'justify-center' : ''}`}>
         <span className="text-xl text-accent-400" style={{ fontFamily: "'Reem Kufi', sans-serif" }}>{ar}</span>
-        <span className="h-px w-12 bg-accent-400/50" />
+        <span className="h-2 w-2 rotate-45 bg-accent-400" /><span className="h-px w-12 bg-accent-400/50" />
       </div>
-      <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-white">{title}</h2>
+      <h2 className="mt-2 text-2xl font-bold uppercase tracking-[0.06em] text-white sm:text-3xl">{title}</h2>
       {sub && <p className="mt-1 text-gray-500">{sub}</p>}
     </div>
   );

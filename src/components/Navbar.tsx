@@ -80,9 +80,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to={{ name: 'home' }} className="flex items-center gap-2 group">
-            <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all">
-              <Logo size={22} className="text-white" />
-            </div>
+            <Logo size={34} className="text-white" />
             <div className="flex flex-col leading-none">
               <span className="text-base font-bold text-white tracking-tight">Qehwa Chess</span>
               <span className="text-[10px] text-brand-400 font-medium tracking-wider uppercase">{t('Discover · Play · Compete')}</span>
