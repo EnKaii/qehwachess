@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { MoroccoMap } from '@/components/MoroccoMap';
+import { useMemo } from 'react';
+import { LandingStory } from '@/components/landing/LandingStory';
 import { Link } from '@/context/RouterContext';
-import { useTournaments, useCities } from '@/hooks/useData';
+import { useTournaments } from '@/hooks/useData';
 import { TournamentCard } from '@/components/TournamentCard';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -10,7 +9,6 @@ import { PageLoader } from '@/components/ui/Feedback';
 import {
   Trophy,
   MapPin,
-  Users,
   ArrowRight,
   Calendar,
   Building2,
@@ -24,7 +22,6 @@ export function HomePage() {
   const { t, language } = useLanguage();
   const translate = t;
   const { tournaments, loading } = useTournaments();
-  const { cities } = useCities();
 
   const featured = useMemo(
     () => tournaments.filter((t) => t.featured).slice(0, 4),
@@ -39,78 +36,10 @@ export function HomePage() {
     [tournaments]
   );
 
-  const [playerCount, setPlayerCount] = useState(0);
-  useEffect(() => {
-    void supabase.from('profiles').select('id', { count: 'exact', head: true }).then(({ count }) => setPlayerCount(count ?? 0));
-  }, []);
-
-  const stats = useMemo(
-    () => ({
-      tournaments: tournaments.length,
-      cities: cities.length,
-      players: playerCount,
-    }),
-    [tournaments, cities, playerCount]
-  );
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative isolate flex min-h-[720px] items-center justify-center overflow-hidden border-b border-surface-700/40 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-        <MoroccoMap
-          decorative
-          className="pointer-events-none absolute right-[-4%] top-1/2 h-[88%] -translate-y-1/2 opacity-70 sm:right-[2%] lg:right-[6%]"
-          points={cities.filter((city) => city.latitude !== null && city.longitude !== null).map((city) => ({ key: city.id, lat: city.latitude as number, lng: city.longitude as number, label: city.name }))}
-        />
-        <div className="home-hero-wash pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute inset-0 chess-pattern opacity-30" />
-
-        <div className="relative z-10 mx-auto max-w-5xl text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-brand-500/25 bg-surface-900/75 font-display text-5xl text-brand-300 shadow-xl backdrop-blur-sm animate-scale-in" aria-hidden="true">
-            ♞
-          </div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-500/25 bg-surface-900/80 px-4 py-2 text-sm font-semibold text-brand-600 shadow-sm backdrop-blur-sm animate-fade-in">
-            <MapPin className="h-4 w-4" />
-            {t('Chess across Morocco')}
-          </div>
-          <h1 className="font-display text-6xl font-bold leading-none text-white text-balance sm:text-7xl lg:text-8xl animate-fade-in-up">
-            {t('Qehwa Chess')}
-            <span className="mt-3 block font-sans text-2xl font-semibold text-accent-300 sm:text-3xl">{t('Find your people. Play over the board.')}</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-400 sm:text-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            {t('Find local meetups, chess clubs, and tournaments from Casablanca to Tangier.')}
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <Link to={{ name: 'map' }}>
-              <Button size="lg">
-                <MapPin className="h-4 w-4" />
-                {t('Find a game')}
-              </Button>
-            </Link>
-            <Link to={{ name: 'tournaments' }}>
-              <Button variant="secondary" size="lg">
-                {t('Explore tournaments')}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            {[
-              { icon: Trophy, label: t('Tournaments'), value: stats.tournaments + '+' },
-              { icon: MapPin, label: t('Cities'), value: stats.cities + '+' },
-              { icon: Users, label: t('Players'), value: String(stats.players) },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-2 text-sm text-gray-400">
-                <stat.icon className="h-4 w-4 text-brand-600" />
-                <span className="font-bold text-white">{stat.value}</span>
-                <span>{stat.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LandingStory />
 
       {/* Featured Tournaments */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -299,3 +301,15 @@ html[data-theme='light'] .gradient-text {
   background: var(--brand-500);
 }
 
+
+/* Navbar over the dark landing story, in either theme */
+header.on-dark { background: rgba(10, 18, 53, 0.82) !important; backdrop-filter: blur(10px); border-color: rgba(239, 233, 220, 0.12) !important; }
+html[data-theme='light'] header.on-dark .text-white { color: #fff !important; }
+html[data-theme='light'] header.on-dark .text-gray-200,
+html[data-theme='light'] header.on-dark .text-gray-300,
+html[data-theme='light'] header.on-dark .text-gray-400 { color: rgba(239, 233, 220, 0.82) !important; }
+html[data-theme='light'] header.on-dark .text-brand-300,
+html[data-theme='light'] header.on-dark .text-brand-400 { color: #80b0e8 !important; }
+html[data-theme='light'] header.on-dark .bg-surface-900,
+html[data-theme='light'] header.on-dark .bg-surface-800 { background-color: rgba(10, 18, 53, 0.9) !important; }
+html[data-theme='light'] header.on-dark .border-surface-700 { border-color: rgba(239, 233, 220, 0.28) !important; }

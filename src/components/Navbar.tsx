@@ -12,14 +12,21 @@ export function Navbar() {
   const { language, chooseLanguage, languageNames, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  const [onDark, setOnDark] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => {
+      setScrolled(window.scrollY > 20);
+      const story = document.getElementById('story');
+      setOnDark(Boolean(story) && window.scrollY < story!.offsetHeight - window.innerHeight * 0.6);
+    };
     window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
+    const timer = window.setTimeout(handler, 0);
+    return () => { window.removeEventListener('scroll', handler); window.clearTimeout(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.name]);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -64,7 +71,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${onDark ? 'on-dark' : ''} ${
         scrolled ? 'glass border-b border-surface-700/50' : 'bg-transparent'
       }`}
     >
