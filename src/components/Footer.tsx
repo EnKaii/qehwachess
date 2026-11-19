@@ -1,5 +1,6 @@
+import { Logo } from '@/components/Logo';
 import { Link } from '@/context/RouterContext';
-import { Crown, Mail, Twitter, Instagram, Facebook } from 'lucide-react';
+import { Mail, Twitter, Instagram, Facebook } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function Footer() {
@@ -12,7 +13,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-                <Crown className="w-5 h-5 text-white" />
+                <Logo size={22} className="text-white" />
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-base font-bold text-white">Qehwa Chess</span>

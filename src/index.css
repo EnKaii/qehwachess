@@ -10,93 +10,92 @@
 
 :root,
 :root[data-theme='dark'] {
-  /* Night in Fes: deep zellige blue, saffron, cream */
-  --page-bg: #0a1220;
-  --page-bg-2: #0e192b;
-  --surface-950: #0a1220;
-  --surface-900: #0f1a2c;
-  --surface-800: #16243a;
-  --surface-700: #223452;
-  --surface-600: #31486c;
-  --brand-500: #2f6fc8;
-  --brand-600: #2457a4;
-  --brand-700: #1d4480;
-  --tw-surface-950: 10 18 32;
-  --tw-surface-900: 15 26 44;
-  --tw-surface-800: 22 36 58;
-  --tw-surface-700: 34 52 82;
-  --tw-surface-600: 49 72 108;
-  --tw-brand-50: 238 245 253;
-  --tw-brand-100: 214 231 249;
-  --tw-brand-200: 172 205 242;
-  --tw-brand-300: 128 176 232;
-  --tw-brand-400: 85 143 218;
-  --tw-brand-500: 47 111 200;
-  --tw-brand-600: 36 87 164;
-  --tw-brand-700: 29 68 128;
-  --tw-brand-800: 22 50 94;
-  --tw-brand-900: 15 34 64;
-  --tw-accent-50: 255 249 235;
-  --tw-accent-100: 253 237 196;
-  --tw-accent-200: 250 217 140;
-  --tw-accent-300: 245 192 84;
-  --tw-accent-400: 236 166 41;
-  --tw-accent-500: 214 138 22;
-  --tw-accent-600: 168 104 18;
-  --tw-accent-700: 120 74 15;
-  --text-primary: #f7f1e3;
-  --text-secondary: #d6cdb9;
-  --text-muted: #9d9786;
-  --border: rgba(247, 241, 227, 0.09);
+  /* Fes palace gate: night navy, cobalt zellige, brass, plaster */
+  --page-bg: #0a1235;
+  --page-bg-2: #0c163f;
+  --surface-950: #0a1235;
+  --surface-900: #0f1c52;
+  --surface-800: #15266b;
+  --surface-700: #243678;
+  --surface-600: #385096;
+  --brand-500: #3458dc;
+  --brand-600: #2644b8;
+  --brand-700: #1d3492;
+  --tw-surface-950: 10 18 53;
+  --tw-surface-900: 15 28 82;
+  --tw-surface-800: 21 38 107;
+  --tw-surface-700: 36 54 120;
+  --tw-surface-600: 56 80 150;
+  --tw-brand-50: 238 243 255;
+  --tw-brand-100: 214 224 252;
+  --tw-brand-200: 170 190 248;
+  --tw-brand-300: 132 160 242;
+  --tw-brand-400: 91 124 232;
+  --tw-brand-500: 52 88 220;
+  --tw-brand-600: 38 68 184;
+  --tw-brand-700: 29 52 146;
+  --tw-brand-800: 22 40 110;
+  --tw-brand-900: 15 28 76;
+  --tw-accent-50: 255 249 232;
+  --tw-accent-100: 252 238 196;
+  --tw-accent-200: 247 219 140;
+  --tw-accent-300: 240 200 100;
+  --tw-accent-400: 226 178 74;
+  --tw-accent-500: 201 150 44;
+  --tw-accent-600: 154 111 24;
+  --tw-accent-700: 112 78 16;
+  --text-primary: #efe9dc;
+  --text-secondary: #cfc8b8;
+  --text-muted: #9aa0bc;
+  --border: rgba(239, 233, 220, 0.1);
   --shadow-soft: rgba(0, 0, 0, 0.4);
-  --card-highlight: rgba(247, 241, 227, 0.03);
-  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%232f6fc8' stroke-opacity='0.16' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
-  --wash: rgba(47, 111, 200, 0.16);
+  --card-highlight: rgba(239, 233, 220, 0.03);
+  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%233458dc' stroke-opacity='0.18' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
+  --wash: rgba(52, 88, 220, 0.2);
 }
 
 :root[data-theme='light'] {
-  /* Day in Marrakech: cream, deep blue, saffron */
-  --page-bg: #f7f0e1;
-  --page-bg-2: #fbf7ee;
-  --surface-950: #faf5ea;
+  --page-bg: #f4efe3;
+  --page-bg-2: #faf6ec;
+  --surface-950: #f7f2e7;
   --surface-900: #fffdf8;
-  --surface-800: #f2e9d6;
-  --surface-700: #e5d8bd;
-  --surface-600: #d3c3a0;
-  --brand-500: #1f5aa8;
-  --brand-600: #184a8c;
-  --brand-700: #123a70;
-  --tw-surface-950: 250 245 234;
+  --surface-800: #efe8d8;
+  --surface-700: #e1d8c0;
+  --surface-600: #cfc3a4;
+  --brand-500: #1f3fb5;
+  --brand-600: #183296;
+  --brand-700: #122676;
+  --tw-surface-950: 247 242 231;
   --tw-surface-900: 255 253 248;
-  --tw-surface-800: 242 233 214;
-  --tw-surface-700: 229 216 189;
-  --tw-surface-600: 211 195 160;
-  --tw-brand-50: 239 245 252;
-  --tw-brand-100: 217 232 247;
-  --tw-brand-200: 178 207 240;
-  --tw-brand-300: 128 171 222;
-  --tw-brand-400: 74 127 196;
-  --tw-brand-500: 31 90 168;
-  --tw-brand-600: 24 74 140;
-  --tw-brand-700: 18 58 112;
-  --tw-brand-800: 14 45 88;
-  --tw-brand-900: 9 31 62;
+  --tw-surface-800: 239 232 216;
+  --tw-surface-700: 225 216 192;
+  --tw-surface-600: 207 195 164;
+  --tw-brand-50: 238 243 253;
+  --tw-brand-100: 214 224 250;
+  --tw-brand-200: 170 190 244;
+  --tw-brand-300: 120 148 232;
+  --tw-brand-400: 66 100 205;
+  --tw-brand-500: 31 63 181;
+  --tw-brand-600: 24 50 150;
+  --tw-brand-700: 18 38 118;
+  --tw-brand-800: 13 28 90;
+  --tw-brand-900: 9 20 62;
   --tw-accent-50: 255 247 225;
-  --tw-accent-100: 253 232 178;
-  --tw-accent-200: 247 211 118;
-  --tw-accent-300: 168 104 18;
-  --tw-accent-400: 140 84 10;
-  --tw-accent-500: 120 70 8;
-  --tw-accent-600: 94 54 6;
-  --tw-accent-700: 70 40 5;
-  --text-primary: #1c1b17;
-  --text-secondary: #4a4636;
-  --text-muted: #6d6754;
-  --border: rgba(28, 27, 23, 0.1);
+  --tw-accent-100: 252 236 190;
+  --tw-accent-200: 245 216 130;
+  --tw-accent-300: 168 118 20;
+  --tw-accent-400: 140 96 12;
+  --tw-accent-500: 112 76 8;
+  --tw-accent-600: 84 56 6;
+  --tw-accent-700: 60 40 4;
+  --text-primary: #1a1a24;
+  --text-secondary: #403d52;
+  --text-muted: #67647c;
+  --border: rgba(26, 26, 36, 0.12);
   --shadow-soft: rgba(60, 40, 10, 0.08);
-  --card-highlight: rgba(28, 27, 23, 0.02);
-  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%231f5aa8' stroke-opacity='0.12' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
-  --wash: rgba(31, 90, 168, 0.1);
+  --card-highlight: rgba(26, 26, 36, 0.02);
+  --zellige: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%231f3fb5' stroke-opacity='0.12' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3C/g%3E%3C/svg%3E");
+  --wash: rgba(31, 63, 181, 0.1);
 }
 
 * {
@@ -115,7 +114,7 @@ body {
 }
 
 html[data-theme='light'] .gradient-text {
-  background-image: linear-gradient(135deg, #123a70 0%, #1f5aa8 48%, #a86812 100%);
+  background-image: linear-gradient(135deg, #122676 0%, #1f3fb5 48%, #a87614 100%);
 }
 
 .home-hero-wash {
@@ -228,7 +227,7 @@ html[data-theme='light'] .gradient-text {
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #f7f1e3 0%, #f5c054 50%, #f7f1e3 100%);
+    background: linear-gradient(135deg, #efe9dc 0%, #e2b24a 50%, #efe9dc 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

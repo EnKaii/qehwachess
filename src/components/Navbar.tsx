@@ -1,10 +1,11 @@
+import { Logo } from '@/components/Logo';
 import { useState, useEffect } from 'react';
 import { Link, useRouter } from '@/context/RouterContext';
 import { useAuth } from '@/context/AuthContext';
 import { Language, useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/context/ThemeContext';
-import { Menu, X, LayoutDashboard, Shield, Settings, LogOut, ChevronDown, Crown, MessageCircle, Sun, Moon } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Shield, Settings, LogOut, ChevronDown, MessageCircle, Sun, Moon } from 'lucide-react';
 
 export function Navbar() {
   const { route, navigate } = useRouter();
@@ -80,7 +81,7 @@ export function Navbar() {
           {/* Logo */}
           <Link to={{ name: 'home' }} className="flex items-center gap-2 group">
             <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all">
-              <Crown className="w-5 h-5 text-white" />
+              <Logo size={22} className="text-white" />
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-base font-bold text-white tracking-tight">Qehwa Chess</span>

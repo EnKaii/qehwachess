@@ -2,12 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from '@/context/RouterContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';
-import { ChessWorld, type ButtonSpec, type WorldPin } from './ChessWorld';
+import { MOROCCO_PATH, projectToMorocco } from '@/lib/moroccoMap';
+import { OPERA_MOVES, buildGame, pieceAt } from '@/lib/operaGame';
+import { PIECE_SHAPES } from './pieceShapes';
 
-const SCROLL_PX = 6800;
+const SCROLL_PX = 12000;
+const GAME = buildGame();
+const PLIES = OPERA_MOVES.length;
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
 const ease = (t: number) => t * t * (3 - 2 * t);
+const easeOutBack = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 const seg = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
+const kufi = "'Reem Kufi', sans-serif";
 
 const CITY_DATA = [
   { name: 'Tangier', ar: 'طنجة', lat: 35.77, lng: -5.8 }, { name: 'Tetouan', ar: 'تطوان', lat: 35.58, lng: -5.37 },
@@ -17,46 +23,41 @@ const CITY_DATA = [
   { name: 'Essaouira', ar: 'الصويرة', lat: 31.51, lng: -9.77 }, { name: 'Agadir', ar: 'أكادير', lat: 30.43, lng: -9.6 },
   { name: 'Ouarzazate', ar: 'ورزازات', lat: 30.92, lng: -6.89 }, { name: 'Errachidia', ar: 'الرشيدية', lat: 31.93, lng: -4.43 },
   { name: 'Laayoune', ar: 'العيون', lat: 27.15, lng: -13.2 }, { name: 'Dakhla', ar: 'الداخلة', lat: 23.68, lng: -15.93 },
-];
+].map((c) => ({ ...c, ...projectToMorocco(c.lat, c.lng) }));
 
-const BUTTONS: (ButtonSpec & { label: string; ar: string; route: 'tournaments' | 'clubs' | 'players' | 'meetups' })[] = [
-  { key: 'tournaments', type: 'king', col: 1, row: 2, label: 'Tournaments', ar: 'البطولات', route: 'tournaments' },
-  { key: 'clubs', type: 'rook', col: 6, row: 2, label: 'Clubs', ar: 'النوادي', route: 'clubs' },
-  { key: 'players', type: 'queen', col: 1, row: 5, label: 'Players', ar: 'اللاعبون', route: 'players' },
-  { key: 'meetups', type: 'bishop', col: 6, row: 5, label: 'Casual meetups', ar: 'اللقاءات', route: 'meetups' },
-];
+const NAV_PIECES: Record<string, { label: string; ar: string; route: 'tournaments' | 'clubs' | 'players' | 'meetups' }> = {
+  wa1: { label: 'Clubs', ar: 'النوادي', route: 'clubs' },
+  wc1: { label: 'Meetups', ar: 'اللقاءات', route: 'meetups' },
+  we1: { label: 'Tournaments', ar: 'البطولات', route: 'tournaments' },
+  wg1: { label: 'Players', ar: 'اللاعبون', route: 'players' },
+};
 
 type Counts = Record<string, { id: string | null; t: number; c: number; g: number }>;
-const kufi = "'Reem Kufi', sans-serif";
 
 export function LandingStory() {
   const { navigate } = useRouter();
   const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gateLayer = useRef<HTMLDivElement>(null);
-  const gateWrap = useRef<HTMLDivElement>(null);
-  const leftLeaf = useRef<SVGGElement>(null);
-  const rightLeaf = useRef<SVGGElement>(null);
-  const intro = useRef<HTMLDivElement>(null);
-  const hint = useRef<HTMLDivElement>(null);
-  const holdHint = useRef<HTMLDivElement>(null);
-  const card = useRef<HTMLDivElement>(null);
-  const canvasWrap = useRef<HTMLDivElement>(null);
-  const labelRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const worldRef = useRef<ChessWorld | null>(null);
-  const progress = useRef(0);
+  const [p, setP] = useState(0);
   const [sel, setSel] = useState('Casablanca');
+  const [hoverPiece, setHoverPiece] = useState<string | null>(null);
   const [counts, setCounts] = useState<Counts>({});
-  const [noGl, setNoGl] = useState(false);
 
-  const pins = useMemo<WorldPin[]>(
-    () => CITY_DATA.map((c) => ({ key: c.name, name: c.name, lat: c.lat, lng: c.lng, weight: (counts[c.name]?.t ?? 0) + (counts[c.name]?.c ?? 0) + (counts[c.name]?.g ?? 0) })),
-    [counts],
-  );
-  const pinsRef = useRef(pins);
-  pinsRef.current = pins;
+  useEffect(() => {
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const section = sectionRef.current;
+      if (!section) return;
+      const forced = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('story') : null;
+      setP(forced !== null ? clamp(Number(forced)) : clamp(-section.getBoundingClientRect().top / SCROLL_PX));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    apply();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, []);
 
   // real counts per city
   useEffect(() => {
@@ -84,116 +85,135 @@ export function LandingStory() {
     return () => { live = false; };
   }, []);
 
-  // 3D world
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const stage = stageRef.current;
-    const section = sectionRef.current;
-    if (!canvas || !stage || !section) return;
-    let world: ChessWorld;
-    try {
-      world = new ChessWorld(canvas, BUTTONS, pinsRef.current, {
-        onPieceClick: (key) => { const b = BUTTONS.find((x) => x.key === key); if (b) navigate({ name: b.route }); },
-        onPinHover: (key) => { if (key) setSel(key); },
-        onPinSelect: (key) => setSel(key),
-        onFrame: ({ labels, hoverPiece }) => {
-          const p = progress.current;
-          const o = String(seg(p, 0.42, 0.48) * (1 - seg(p, 0.6, 0.66)));
-          for (const b of BUTTONS) {
-            const el = labelRefs.current[b.key];
-            if (!el) continue;
-            const l = labels.find((x) => x.key === b.key);
-            el.style.opacity = l ? o : '0';
-            if (l) el.style.transform = `translate(${l.x}px, ${l.y}px) translate(-50%, -100%)`;
-            el.style.borderColor = hoverPiece === b.key ? '#f6d98b' : '#e2b24a';
-            el.style.background = hoverPiece === b.key ? '#e2b24a' : 'rgba(10,18,53,.92)';
-            el.style.color = hoverPiece === b.key ? '#0a1235' : '#efe9dc';
-          }
-        },
-      });
-    } catch {
-      setNoGl(true);
-      return;
-    }
-    worldRef.current = world;
-    const ro = new ResizeObserver(() => world.resize(stage.clientWidth, stage.clientHeight));
-    ro.observe(stage);
-    world.resize(stage.clientWidth, stage.clientHeight);
-    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? world.start() : world.stop()));
-    io.observe(section);
-    return () => { io.disconnect(); ro.disconnect(); world.dispose(); worldRef.current = null; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // ---- timeline: gate -> choose a piece -> the game -> pieces clear -> map ----
+  const gateScale = 0.8 + 2.2 * ease(seg(p, 0, 0.18));
+  const gateO = 1 - seg(p, 0.14, 0.2);
+  const sx = 1 - 0.94 * ease(seg(p, 0, 0.14));
+  const q = PLIES * seg(p, 0.24, 0.55);
+  const clear = ease(seg(p, 0.55, 0.62));
+  const outline = ease(seg(p, 0.6, 0.7));
+  const fill = ease(seg(p, 0.68, 0.74));
+  const labelsO = seg(p, 0.17, 0.19) * (1 - seg(p, 0.23, 0.25));
+  const shift = ease(seg(p, 0.6, 0.68));
+  const cardO = seg(p, 0.78, 0.83);
+  const mapLive = p > 0.78;
+  const moveNo = Math.min(17, Math.floor(Math.min(q, PLIES - 0.001) / 2) + 1);
 
-  useEffect(() => { worldRef.current?.select(sel); }, [sel]);
-
-  // scroll -> progress
-  useEffect(() => {
-    const apply = () => {
-      const section = sectionRef.current;
-      if (!section) return;
-      const forced = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('story') : null;
-      const p = forced !== null ? clamp(Number(forced)) : clamp(-section.getBoundingClientRect().top / SCROLL_PX);
-      progress.current = p;
-      worldRef.current?.setProgress(p);
-      if (gateWrap.current) gateWrap.current.style.transform = `scale(${0.8 + 2.2 * ease(seg(p, 0, 0.46))})`;
-      if (gateLayer.current) { gateLayer.current.style.opacity = String(1 - seg(p, 0.4, 0.5)); gateLayer.current.style.visibility = p > 0.52 ? 'hidden' : 'visible'; }
-      const sx = 1 - 0.94 * ease(seg(p, 0.14, 0.38));
-      leftLeaf.current?.setAttribute('transform', `translate(154 0) scale(${sx} 1) translate(-154 0)`);
-      rightLeaf.current?.setAttribute('transform', `translate(486 0) scale(${sx} 1) translate(-486 0)`);
-      if (intro.current) intro.current.style.opacity = String(1 - seg(p, 0.04, 0.14));
-      if (hint.current) hint.current.style.opacity = String(1 - seg(p, 0, 0.04));
-      if (holdHint.current) holdHint.current.style.opacity = String(seg(p, 0.44, 0.5) * (1 - seg(p, 0.58, 0.62)));
-      if (card.current) { const o = seg(p, 0.9, 0.95); card.current.style.opacity = String(o); card.current.style.pointerEvents = o > 0.5 ? 'auto' : 'none'; }
-      if (canvasWrap.current) canvasWrap.current.style.pointerEvents = (p > 0.42 && p < 0.64) || p > 0.9 ? 'auto' : 'none';
-    };
-    apply();
-    window.addEventListener('scroll', apply, { passive: true });
-    window.addEventListener('resize', apply);
-    return () => { window.removeEventListener('scroll', apply); window.removeEventListener('resize', apply); };
-  }, []);
+  const pieces = useMemo(() => {
+    const rows = GAME.map((g) => ({ g, s: pieceAt(g, q) })).filter((r) => r.s.opacity > 0.01);
+    return rows.sort((a, b) => Number(a.s.moving) - Number(b.s.moving));
+  }, [q]);
 
   const cur = CITY_DATA.find((c) => c.name === sel) ?? CITY_DATA[6];
   const cc = counts[cur.name] ?? { id: null, t: 0, c: 0, g: 0 };
   const total = cc.t + cc.c + cc.g;
 
+  const squares = [];
+  for (let y = 0; y < 8; y += 1) for (let x = 0; x < 8; x += 1) squares.push(<rect key={`${x}-${y}`} x={x * 100} y={y * 100} width={100} height={100} fill={(x + y) % 2 === 0 ? '#E8E1D0' : '#1A33A0'} />);
+
   return (
     <section ref={sectionRef} id="story" style={{ position: 'relative', height: `calc(100vh + ${SCROLL_PX}px)` }}>
-      <div ref={stageRef} style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#0A1235' }}>
-        <div ref={canvasWrap} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#0A1235', color: '#EFE9DC' }}>
+        {/* the board, flat, behind the gate */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', width: 'min(70vh, 78vw)', aspectRatio: '1 / 1', transform: `translateX(${-16 * shift}vw)` }}>
+            <svg viewBox="-50 -50 900 900" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }} role="img" aria-label="Chessboard">
+              <defs>
+                <pattern id="b-zel" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#1A33A0" /><g fill="none" stroke="#6F8CF0" strokeWidth="1"><rect x="9" y="9" width="18" height="18" /><rect x="9" y="9" width="18" height="18" transform="rotate(45 18 18)" /></g><circle cx="18" cy="18" r="2" fill="#E2B24A" /></pattern>
+                <pattern id="b-map" width="56" height="56" patternUnits="userSpaceOnUse"><rect width="56" height="56" fill="#0E1B66" /><g fill="none" stroke="#3B5BD0" strokeWidth="1.2"><rect x="14" y="14" width="28" height="28" /><rect x="14" y="14" width="28" height="28" transform="rotate(45 28 28)" /></g><circle cx="28" cy="28" r="3" fill="#E2B24A" /></pattern>
+              </defs>
+              <rect x="-50" y="-50" width="900" height="900" fill="url(#b-zel)" />
+              <rect x="-6" y="-6" width="812" height="812" fill="none" stroke="#E2B24A" strokeWidth="3" />
+              <g opacity={1 - 0.68 * fill}>{squares}</g>
+
+              {/* the map draws itself on the board */}
+              <g transform="translate(70 46) scale(.66)">
+                <path d={MOROCCO_PATH} fill="#0A1235" opacity={fill * 0.92} />
+                <path d={MOROCCO_PATH} fill="url(#b-map)" opacity={fill} />
+                <path d={MOROCCO_PATH} pathLength={1} fill="none" stroke="#F0C75E" strokeWidth={6} strokeLinejoin="round" strokeLinecap="round" strokeDasharray="1 1" strokeDashoffset={1 - outline} style={{ filter: 'drop-shadow(0 0 8px rgba(226,178,74,.8))' }} />
+                {CITY_DATA.map((c, i) => {
+                  const r = clamp((p - (0.72 + i * 0.005)) / 0.05);
+                  if (r <= 0) return null;
+                  const on = c.name === sel;
+                  const s = easeOutBack(r) * (on ? 1.35 : 1);
+                  return (
+                    <g key={c.name} transform={`translate(${c.x} ${c.y}) scale(${s})`} style={{ cursor: mapLive ? 'pointer' : 'default', pointerEvents: mapLive ? 'auto' : 'none' }}
+                      onMouseEnter={() => setSel(c.name)} onClick={() => setSel(c.name)}>
+                      <circle r="34" fill="transparent" />
+                      {on && <circle r="22" fill="none" stroke="#FFE9A8" strokeWidth="4" opacity=".8" />}
+                      <circle r="15" fill={on ? '#FFE9A8' : '#E2B24A'} stroke="#0A1235" strokeWidth="5" />
+                      {on && <text y="-32" textAnchor="middle" fontFamily="Inter, sans-serif" fontWeight="700" fontSize="36" fill="#EFE9DC" stroke="#0A1235" strokeWidth="8" paintOrder="stroke">{c.name}</text>}
+                    </g>
+                  );
+                })}
+              </g>
+
+              {labelsO > 0.01 && Object.keys(NAV_PIECES).map((id) => {
+                const g = GAME.find((x) => x.id === id);
+                return g ? <line key={id} x1={g.x0 * 100 + 50} y1={g.y0 * 100 + 92} x2={g.x0 * 100 + 50} y2={872} stroke="#E2B24A" strokeWidth="2" opacity={labelsO * 0.8} /> : null;
+              })}
+              {/* the Opera Game */}
+              {clear < 1 && pieces.map(({ g, s }) => {
+                const cx = s.x * 100 + 50;
+                const cy = s.y * 100 + 50;
+                const dx = cx - 400, dy = cy - 400, d = Math.hypot(dx, dy) || 1;
+                const out = 1100 * clear;
+                const nav = NAV_PIECES[g.id];
+                const lit = nav && hoverPiece === g.id;
+                const live = Boolean(nav) && labelsO > 0.5;
+                return (
+                  <g key={g.id} transform={`translate(${cx + (dx / d) * out} ${cy + (dy / d) * out}) scale(${s.scale * (lit ? 1.12 : 1) * 1.08}) translate(-50 -50)`} opacity={s.opacity * (1 - clear)}
+                    style={{ cursor: live ? 'pointer' : 'default', pointerEvents: live ? 'auto' : 'none' }}
+                    onMouseEnter={() => nav && setHoverPiece(g.id)} onMouseLeave={() => setHoverPiece(null)} onClick={() => nav && navigate({ name: nav.route })}>
+                    <ellipse cx="50" cy="90" rx="26" ry="4" fill="#0A1235" opacity=".25" />
+                    <g fill={g.white ? '#EFE9DC' : '#0A1235'} stroke={g.white ? '#0A1235' : '#E2B24A'} strokeWidth="2.6" strokeLinejoin="round" style={{ ['--ink' as string]: g.white ? '#0A1235' : '#E2B24A' }} dangerouslySetInnerHTML={{ __html: PIECE_SHAPES[g.type] }} />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* labels on the four piece-buttons */}
+            {labelsO > 0.01 && Object.entries(NAV_PIECES).map(([id, n]) => {
+              const piece = GAME.find((g) => g.id === id);
+              if (!piece) return null;
+              return (
+                <button key={id} type="button" onClick={() => navigate({ name: n.route })} onMouseEnter={() => setHoverPiece(id)} onMouseLeave={() => setHoverPiece(null)}
+                  style={{ position: 'absolute', left: `${((piece.x0 * 100 + 100) / 900) * 100}%`, top: `${((872 + 50) / 900) * 100}%`, transform: 'translate(-50%, 0)', opacity: labelsO, pointerEvents: labelsO > 0.5 ? 'auto' : 'none', cursor: 'pointer', border: '1px solid #E2B24A', background: hoverPiece === id ? '#E2B24A' : 'rgba(10,18,53,.94)', color: hoverPiece === id ? '#0A1235' : '#EFE9DC', padding: '5px 12px', textAlign: 'center', whiteSpace: 'nowrap', transition: 'background .2s, color .2s' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>{t(n.label)}</div>
+                  <div style={{ fontFamily: kufi, fontSize: 15 }}>{n.ar}</div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* gate: the doorway is a real hole, so the board shows through it */}
-        <div ref={gateLayer} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-          <div ref={gateWrap} style={{ height: 'min(88vh, 860px)', aspectRatio: '640 / 860', transformOrigin: '50% 62%', transform: 'scale(0.8)' }}>
-            <GateSvg leftLeaf={leftLeaf} rightLeaf={rightLeaf} />
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', opacity: gateO, visibility: gateO <= 0.001 ? 'hidden' : 'visible' }}>
+          <div style={{ height: 'min(88vh, 860px)', aspectRatio: '640 / 860', transformOrigin: '50% 62%', transform: `scale(${gateScale})` }}>
+            <GateSvg sx={sx} />
           </div>
         </div>
 
-        <div ref={intro} style={{ position: 'absolute', left: 0, right: 0, top: 96, textAlign: 'center', pointerEvents: 'none', color: '#EFE9DC' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 96, textAlign: 'center', pointerEvents: 'none', opacity: 1 - seg(p, 0.03, 0.1) }}>
           <div style={{ fontFamily: kufi, fontSize: 26, fontWeight: 600 }}>قهوة شطرنج</div>
           <div style={{ marginTop: 6, fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', opacity: 0.75 }}>{t('Chess in Morocco')}</div>
         </div>
-        <div ref={hint} style={{ position: 'absolute', left: 0, right: 0, bottom: 30, textAlign: 'center', pointerEvents: 'none', color: '#EFE9DC' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 30, textAlign: 'center', pointerEvents: 'none', opacity: 1 - seg(p, 0, 0.03) }}>
           <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', opacity: 0.7 }}>{t('Scroll')}</div>
           <div style={{ width: 1, height: 34, margin: '10px auto 0', background: '#E2B24A' }} />
         </div>
-        <div ref={holdHint} style={{ position: 'absolute', left: 0, right: 0, bottom: 36, textAlign: 'center', pointerEvents: 'none', color: '#EFE9DC', opacity: 0, fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
-          {t('Click a piece, or keep scrolling')}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 14, textAlign: 'center', pointerEvents: 'none', opacity: labelsO, fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
+          {t('Choose a piece, or keep scrolling')}
+        </div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 28, textAlign: 'center', pointerEvents: 'none', opacity: seg(p, 0.26, 0.3) * (1 - seg(p, 0.52, 0.56)), fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>
+          {t('Morphy vs. Duke of Brunswick · Paris 1858')} · {t('Move')} {moveNo}
         </div>
 
-        {BUTTONS.map((b) => (
-          <div key={b.key} ref={(el) => { labelRefs.current[b.key] = el; }} style={{ position: 'absolute', left: 0, top: 0, opacity: 0, pointerEvents: 'none', border: '1px solid #e2b24a', padding: '6px 14px', textAlign: 'center', whiteSpace: 'nowrap', background: 'rgba(10,18,53,.92)', color: '#efe9dc', transition: 'background .2s, color .2s' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>{t(b.label)}</div>
-            <div style={{ fontFamily: kufi, fontSize: 16 }}>{b.ar}</div>
-          </div>
-        ))}
-
-        <div ref={card} style={{ position: 'absolute', right: 'max(24px, 5vw)', top: '50%', transform: 'translateY(-50%)', width: 330, opacity: 0, pointerEvents: 'none', color: '#EFE9DC' }}>
+        {/* map card */}
+        <div style={{ position: 'absolute', right: 'max(24px, 5vw)', top: '50%', transform: 'translateY(-50%)', width: 330, opacity: cardO, pointerEvents: cardO > 0.5 ? 'auto' : 'none' }}>
           <div style={{ fontFamily: kufi, fontSize: 24, fontWeight: 600, color: '#E2B24A' }}>الخريطة</div>
           <div style={{ margin: '4px 0 16px', fontSize: 12, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase' }}>{t('Map')}</div>
-          <div style={{ border: '1px solid rgba(226,178,74,.55)', padding: '20px 22px', background: 'rgba(10,18,53,.82)' }}>
+          <div style={{ border: '1px solid rgba(226,178,74,.55)', padding: '20px 22px', background: 'rgba(10,18,53,.85)' }}>
             <div style={{ fontSize: 24, fontWeight: 700 }}>{cur.name}</div>
             <div style={{ fontFamily: kufi, fontSize: 18, color: '#E2B24A', marginBottom: 12 }}>{cur.ar}</div>
             {([['Tournaments', cc.t], ['Clubs', cc.c], ['Casual games', cc.g]] as const).map(([label, n]) => (
@@ -207,8 +227,6 @@ export function LandingStory() {
           </div>
           <p style={{ margin: '14px 0 0', fontSize: 13, lineHeight: 1.6, color: 'rgba(239,233,220,.7)' }}>{t('Hover or tap a pin to explore a city.')}</p>
         </div>
-
-        {noGl && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EFE9DC' }}>{t('3D is not available in this browser.')}</div>}
       </div>
     </section>
   );
@@ -216,7 +234,7 @@ export function LandingStory() {
 
 const btnStyle: React.CSSProperties = { border: '1px solid rgba(239,233,220,.4)', background: 'none', color: '#EFE9DC', font: '600 12px Inter, sans-serif', padding: '8px 14px', cursor: 'pointer' };
 
-function GateSvg({ leftLeaf, rightLeaf }: { leftLeaf: React.RefObject<SVGGElement>; rightLeaf: React.RefObject<SVGGElement> }) {
+function GateSvg({ sx }: { sx: number }) {
   const knocker = (x: number) => (<><circle cx={x} cy="560" r="13" fill="none" stroke="#7E5510" strokeWidth="4" /><circle cx={x} cy="545" r="5" fill="#7E5510" /></>);
   return (
     <svg viewBox="0 0 640 860" style={{ width: '100%', height: '100%', overflow: 'visible', display: 'block' }} role="img" aria-label="Fes palace gate">
@@ -242,8 +260,8 @@ function GateSvg({ leftLeaf, rightLeaf }: { leftLeaf: React.RefObject<SVGGElemen
         <path d="M130 800V404A198 198 0 1 1 510 404V800" fill="none" stroke="#EFE9DC" strokeWidth="12" strokeDasharray="0 13" strokeLinecap="round" />
       </g>
       <g clipPath="url(#g-open)">
-        <g ref={leftLeaf}><rect x="154" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="154" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(296)}</g>
-        <g ref={rightLeaf}><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(344)}</g>
+        <g transform={`translate(154 0) scale(${sx} 1) translate(-154 0)`}><rect x="154" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="154" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(296)}</g>
+        <g transform={`translate(486 0) scale(${sx} 1) translate(-486 0)`}><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-brass)" /><rect x="319.5" y="170" width="166.5" height="640" fill="url(#g-sheen)" />{knocker(344)}</g>
       </g>
     </svg>
   );

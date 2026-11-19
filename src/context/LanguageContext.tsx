@@ -207,8 +207,19 @@ const translations: Record<Exclude<Language, 'en'>, Record<string, string>> = {
     'Register for tournaments in just a few clicks. Track your registrations and never miss a tournament again.':
       'Inscrivez-vous aux tournois en quelques clics. Suivez vos inscriptions et ne manquez plus aucun tournoi.',
     'Are you organizing a chess tournament?': 'Vous organisez un tournoi d’échecs ?',
-    'Publish your tournament on Qehwa Chess and reach thousands of players across the country. Manage registrations and grow your event.':
-      'Publiez votre tournoi sur Qehwa Chess et touchez des milliers de joueurs. Gérez les inscriptions et développez votre événement.',
+    'Publish your tournament on Qehwa Chess and reach players across Morocco. Manage registrations and grow your event.':
+      'Publiez votre tournoi sur Qehwa Chess et touchez des joueurs partout au Maroc. Gérez les inscriptions et développez votre événement.',
+    'Chess in Morocco': 'Les échecs au Maroc',
+    'Scroll': 'Défiler',
+    'Choose a piece, or keep scrolling': 'Choisissez une pièce, ou continuez à défiler',
+    'Morphy vs. Duke of Brunswick · Paris 1858': 'Morphy contre le duc de Brunswick · Paris 1858',
+    'Move': 'Coup',
+    'View city': 'Voir la ville',
+    'Open full map': 'Ouvrir la carte complète',
+    'Hover or tap a pin to explore a city.': 'Survolez ou touchez une épingle pour explorer une ville.',
+    'Nothing here yet. Be the first to organize something.': "Rien ici pour l'instant. Soyez le premier à organiser quelque chose.",
+    'Meetups': 'Rencontres',
+    'No upcoming tournaments yet.': 'Aucun tournoi à venir pour le moment.',
     'Tournaments across Morocco': 'Tournois au Maroc',
     'Tournaments organized by this club': 'Tournois organisés par ce club',
     'No upcoming tournaments': 'Aucun tournoi à venir',
@@ -697,8 +708,8 @@ const translations: Record<Exclude<Language, 'en'>, Record<string, string>> = {
     'Register for tournaments in just a few clicks. Track your registrations and never miss a tournament again.':
       'سجل في البطولات ببضع نقرات، وتابع تسجيلاتك ولا تفوت أي بطولة.',
     'Are you organizing a chess tournament?': 'هل تنظم بطولة شطرنج؟',
-    'Publish your tournament on Qehwa Chess and reach thousands of players across the country. Manage registrations and grow your event.':
-      'انشر بطولتك على Qehwa Chess وتواصل مع آلاف اللاعبين. أدر التسجيلات وطوّر فعاليتك.',
+    'Publish your tournament on Qehwa Chess and reach players across Morocco. Manage registrations and grow your event.':
+      'انشر بطولتك على Qehwa Chess وتواصل مع اللاعبين في جميع أنحاء المغرب. أدر التسجيلات وطوّر فعاليتك.',
     'Tournaments across Morocco': 'بطولات في المغرب',
     'Tournaments organized by this club': 'البطولات التي ينظمها هذا النادي',
     'No upcoming tournaments': 'لا توجد بطولات قادمة',

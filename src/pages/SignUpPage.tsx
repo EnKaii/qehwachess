@@ -1,10 +1,11 @@
+import { Logo } from '@/components/Logo';
 import { useState } from 'react';
 import { Link, useRouter } from '@/context/RouterContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCities } from '@/hooks/useData';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Crown, Mail, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function SignUpPage() {
@@ -80,7 +81,7 @@ export function SignUpPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-              <Crown className="w-6 h-6 text-white" />
+              <Logo size={26} className="text-white" />
             </div>
           </div>
           <h1 className="text-2xl font-bold text-white">{t('Join Qehwa Chess')}</h1>
